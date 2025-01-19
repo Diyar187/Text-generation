@@ -12,9 +12,9 @@ tokenizer.pad_token = tokenizer.eos_token
 def load_dataset(file_path, tokenizer, block_size=128):
     try:
         dataset = Dataset.from_text(file_path)
-        print(f"Datensatz erfolgreich geladen. Anzahl der Zeilen: {len(dataset)}")
+        print(f"Data set loaded successfully. Number of lines: {len(dataset)}")
     except Exception as e:
-        print(f"Fehler beim Laden des Datensatzes: {e}")
+        print(f"Error loading dataset: {e}")
         return None
     
     def tokenize_function(examples):
@@ -22,7 +22,7 @@ def load_dataset(file_path, tokenizer, block_size=128):
     
     tokenized_datasets = dataset.map(tokenize_function, batched=True)
 
-    print("Tokenisierte Beispiele:")
+    print("Tokenized examples:")
     for i in range(min(5, len(tokenized_datasets))):
         print(tokenizer.decode(tokenized_datasets[i]["input_ids"], skip_special_tokens=True))
     
@@ -31,9 +31,9 @@ def load_dataset(file_path, tokenizer, block_size=128):
 train_dataset = load_dataset(dataset_path, tokenizer)
 
 if train_dataset is None or len(train_dataset) == 0:
-    print("Fehler: Der Datensatz konnte nicht geladen werden oder ist leer!")
+    print("Error: The data set could not be loaded or is empty")
 else:
-    print(f"Anzahl der Trainingsbeispiele: {len(train_dataset)}")
+    print(f"Number of training examples: {len(train_dataset)}")
 
 data_collator = DataCollatorForLanguageModeling(
     tokenizer=tokenizer, mlm=False
