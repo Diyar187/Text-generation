@@ -2,29 +2,18 @@ from transformers import GPT2Tokenizer, GPT2LMHeadModel, Trainer, TrainingArgume
 from datasets import Dataset
 
 # Pfad zu deinem Datensatz
-dataset_path = "creative_texts.txt"  # Stelle sicher, dass der Pfad korrekt ist
+dataset_path = "creative_texts.txt"  
 
 # Lade Tokenizer und Modell
-model_name = "gpt2"  # Nutze ein kleineres Modell, z. B. "gpt2" oder "gpt2-small"
+model_name = "gpt2" 
 tokenizer = GPT2Tokenizer.from_pretrained(model_name)
 model = GPT2LMHeadModel.from_pretrained(model_name)
 
-# Setze den Padding-Token auf den EOS-Token
+# Padding-Token auf den EOS-Token setzen
 tokenizer.pad_token = tokenizer.eos_token
 
 # Lade den Datensatz
 def load_dataset(file_path, tokenizer, block_size=128):
-    """
-    Lade einen Textdatensatz und bereite ihn für das Training vor.
-    
-    Args:
-    - file_path: Pfad zur Textdatei.
-    - tokenizer: Tokenizer für die Textverarbeitung.
-    - block_size: Länge der Textblöcke für das Training.
-
-    Returns:
-    - Dataset: Der geladene Datensatz.
-    """
     try:
         dataset = Dataset.from_text(file_path)
         print(f"Datensatz erfolgreich geladen. Anzahl der Zeilen: {len(dataset)}")
@@ -32,14 +21,14 @@ def load_dataset(file_path, tokenizer, block_size=128):
         print(f"Fehler beim Laden des Datensatzes: {e}")
         return None
     
-    # Tokenisiere den Text
+    # Text tokenisieren
     def tokenize_function(examples):
         return tokenizer(examples["text"], truncation=True, padding="max_length", max_length=block_size)
     
-    # Tokenisiere alle Beispiele im Datensatz
+    # Beispiele im Datensatz tokenisieren
     tokenized_datasets = dataset.map(tokenize_function, batched=True)
 
-    # Debug-Ausgabe: Überprüfe, ob die Tokenisierung erfolgreich war
+    # Überprüfung, ob die Tokenisierung erfolgreich war
     print("Tokenisierte Beispiele:")
     for i in range(min(5, len(tokenized_datasets))):
         print(tokenizer.decode(tokenized_datasets[i]["input_ids"], skip_special_tokens=True))
@@ -49,11 +38,9 @@ def load_dataset(file_path, tokenizer, block_size=128):
 # Lade den Datensatz
 train_dataset = load_dataset(dataset_path, tokenizer)
 
-# Überprüfe, ob der Datensatz geladen wurde
 if train_dataset is None or len(train_dataset) == 0:
     print("Fehler: Der Datensatz konnte nicht geladen werden oder ist leer!")
 else:
-    # Überprüfe, wie viele Beispiele im Datensatz enthalten sind
     print(f"Anzahl der Trainingsbeispiele: {len(train_dataset)}")
 
 # Daten-Handler für das Sprachmodell
