@@ -1,2 +1,2 @@
-# Textgenerierung
+# Text generation
 
