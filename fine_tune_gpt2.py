@@ -1,18 +1,14 @@
 from transformers import GPT2Tokenizer, GPT2LMHeadModel, Trainer, TrainingArguments, DataCollatorForLanguageModeling
 from datasets import Dataset
 
-# Pfad zu deinem Datensatz
 dataset_path = "creative_texts.txt"  
 
-# Lade Tokenizer und Modell
 model_name = "gpt2" 
 tokenizer = GPT2Tokenizer.from_pretrained(model_name)
 model = GPT2LMHeadModel.from_pretrained(model_name)
 
-# Padding-Token auf den EOS-Token setzen
 tokenizer.pad_token = tokenizer.eos_token
 
-# Lade den Datensatz
 def load_dataset(file_path, tokenizer, block_size=128):
     try:
         dataset = Dataset.from_text(file_path)
@@ -21,21 +17,17 @@ def load_dataset(file_path, tokenizer, block_size=128):
         print(f"Fehler beim Laden des Datensatzes: {e}")
         return None
     
-    # Text tokenisieren
     def tokenize_function(examples):
         return tokenizer(examples["text"], truncation=True, padding="max_length", max_length=block_size)
     
-    # Beispiele im Datensatz tokenisieren
     tokenized_datasets = dataset.map(tokenize_function, batched=True)
 
-    # Überprüfung, ob die Tokenisierung erfolgreich war
     print("Tokenisierte Beispiele:")
     for i in range(min(5, len(tokenized_datasets))):
         print(tokenizer.decode(tokenized_datasets[i]["input_ids"], skip_special_tokens=True))
     
     return tokenized_datasets
 
-# Lade den Datensatz
 train_dataset = load_dataset(dataset_path, tokenizer)
 
 if train_dataset is None or len(train_dataset) == 0:
@@ -43,23 +35,20 @@ if train_dataset is None or len(train_dataset) == 0:
 else:
     print(f"Anzahl der Trainingsbeispiele: {len(train_dataset)}")
 
-# Daten-Handler für das Sprachmodell
 data_collator = DataCollatorForLanguageModeling(
     tokenizer=tokenizer, mlm=False
 )
 
-# Trainingsargumente
 training_args = TrainingArguments(
-    output_dir="./results",        # Verzeichnis für die gespeicherten Ergebnisse
-    overwrite_output_dir=True,    # Vorhandene Dateien überschreiben
-    num_train_epochs=3,           # Anzahl der Trainingsepochen
-    per_device_train_batch_size=2, # Batch-Größe
-    save_steps=10,                # Anzahl der Schritte zwischen Speichervorgängen
-    logging_dir="./logs",         # Verzeichnis für Log-Dateien
-    logging_steps=5               # Schritte zwischen Logs
+    output_dir="./results",        
+    overwrite_output_dir=True,    
+    num_train_epochs=3,          
+    per_device_train_batch_size=2, 
+    save_steps=10,                
+    logging_dir="./logs",       
+    logging_steps=5              
 )
 
-# Trainer-Objekt initialisieren
 trainer = Trainer(
     model=model,
     args=training_args,
@@ -67,13 +56,12 @@ trainer = Trainer(
     train_dataset=train_dataset
 )
 
-# Training starten, nur wenn der Datensatz korrekt geladen wurde
 if train_dataset is not None and len(train_dataset) > 0:
     trainer.train()
 
-    # Feinjustiertes Modell speichern
+
     output_dir = "./fine_tuned_gpt2"
     trainer.save_model(output_dir)
-    print(f"Modell erfolgreich gespeichert in: {output_dir}")
+    print(f"Model successfully saved in: {output_dir}")
 else:
-    print("Das Training wurde nicht gestartet, da der Datensatz leer oder fehlerhaft ist.")
+    print("The training did not start because the data set is empty or incorrect.")
