@@ -1,4 +1,4 @@
-# Text generation
+# Fine-Tuning GPT-2 für kreatives Schreiben
 
-Es wird ein feinabgestimmtes GPT-2-Modell verwendet, um kreative Texte zu generieren. Es umfasst das Training des Modells mit einer Sammlung von literarischen Texten und die Generierung neuer Inhalte basierend auf eingegebenen Prompts.
+Dieses Projekt befasst sich mit dem Finetuning eines GPT-2-Modells zur Generierung kreativer Texte. Es umfasst das Training des Modells mit einer benutzerdefinierten Datensammlung, die Generierung neuer Texte sowie Unit-Tests zur Sicherstellung der Funktionalität.
 
